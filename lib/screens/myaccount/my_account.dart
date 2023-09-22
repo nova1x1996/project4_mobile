@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:project_hk4_mobile/const/const.dart';
+import 'package:project_hk4_mobile/providers/AccountProvider.dart';
 import 'package:project_hk4_mobile/screens/myaccount/category/edit_account.dart';
 import 'package:project_hk4_mobile/screens/payment/payment_history.dart';
 import 'package:project_hk4_mobile/widget/ShowDiagLog/log_out.dart';
 import 'package:project_hk4_mobile/widget/TextTitleMedium.dart';
+import 'package:provider/provider.dart';
+
+import '../../model/Patient.dart';
 
 class MyAccountPage extends StatefulWidget {
   static const routeName = "/MyAccountPage";
@@ -16,6 +20,7 @@ class MyAccountPage extends StatefulWidget {
 class _MyAccountPageState extends State<MyAccountPage> {
   @override
   Widget build(BuildContext context) {
+    Patient? patient = Provider.of<AccountProvider>(context).patient;
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
     return Container(
@@ -33,17 +38,29 @@ class _MyAccountPageState extends State<MyAccountPage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(40),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                "https://giadinh.mediacdn.vn/296230595582509056/2022/8/16/30zing-1660609183407-16606091838771037648270.jpg"),
-                            fit: BoxFit.cover),
-                      ),
-                    ),
+                    patient!.image != null
+                        ? Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              image: DecorationImage(
+                                  image:
+                                      NetworkImage(patient!.image.toString()),
+                                  fit: BoxFit.cover),
+                            ),
+                          )
+                        : Container(
+                            width: 80,
+                            height: 80,
+                            child: Icon(
+                              Icons.account_circle_rounded,
+                              size: 80,
+                              color: colorPrimary,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                            )),
                     SizedBox(
                       width: 10,
                     ),
@@ -51,12 +68,12 @@ class _MyAccountPageState extends State<MyAccountPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Tran Minh Khoi",
+                          patient!.name,
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
                         ),
                         Text(
-                          "Thủ Đức TP HCM",
+                          patient!.address,
                           style: TextStyle(
                               color: Colors.grey, fontWeight: FontWeight.bold),
                         ),
