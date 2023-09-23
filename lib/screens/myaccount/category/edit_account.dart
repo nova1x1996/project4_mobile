@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:project_hk4_mobile/const/const.dart';
+import 'package:project_hk4_mobile/providers/AccountProvider.dart';
+import 'package:project_hk4_mobile/screens/myaccount/category/edit_account_pass.dart';
 import 'package:project_hk4_mobile/widget/MauInput2.dart';
+import 'package:provider/provider.dart';
+
+import '../../../model/Patient.dart';
 
 class EditAccountPage extends StatefulWidget {
   static const routeName = "/EditAccountPage";
@@ -12,11 +17,32 @@ class EditAccountPage extends StatefulWidget {
 }
 
 class _EditAccountPageState extends State<EditAccountPage> {
-  TextEditingController _name = TextEditingController();
+  late int IdPatient;
+  late Patient patientModel;
+  TextEditingController email = TextEditingController();
+
+  TextEditingController address = TextEditingController();
+  TextEditingController name = TextEditingController();
+
+  TextEditingController phone = TextEditingController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    patientModel =
+        Provider.of<AccountProvider>(context, listen: false).patient!;
+    email.text = patientModel.email;
+    address.text = patientModel.address;
+    name.text = patientModel.name;
+    phone.text = patientModel.phone;
+    IdPatient = patientModel.id;
+  }
+
   @override
   Widget build(BuildContext context) {
     var screenHeight = MediaQuery.of(context).size.height;
     var screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: colorPrimary,
@@ -39,7 +65,9 @@ class _EditAccountPageState extends State<EditAccountPage> {
               decoration: BoxDecoration(color: Colors.white),
               child: Column(
                 children: [
-                  AvatarEditAccount(),
+                  patientModel.image != null
+                      ? AvatarEditAccount(patientModel.image.toString())
+                      : AvatarNull(),
                   SizedBox(
                     height: 15,
                   ),
@@ -59,40 +87,67 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   SizedBox(
                     height: 15,
                   ),
+                  MauInputReadonly(
+                    label: "EMAIL",
+                    placeholder: "placeholder",
+                    controller: email,
+                  ),
                   MauInput2(
                       label: "NAME",
-                      placeholder: "placeholder",
-                      controller: _name),
+                      placeholder: "Enter name",
+                      controller: name),
                   MauInput2(
-                      label: "EMAIL",
-                      placeholder: "placeholder",
-                      controller: _name),
+                      label: "ADDRESS",
+                      placeholder: "Enter address",
+                      controller: address),
                   MauInput2(
-                      label: "PASSWORD",
-                      placeholder: "placeholder",
-                      controller: _name),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ButtonEA(Icons.keyboard_alt_outlined, "CHANGE PASSWORD"),
-                    ],
+                      label: "PHONE",
+                      placeholder: "Enter phone",
+                      controller: phone),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, EditAccountPass.routeName);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ButtonEA(
+                            Icons.keyboard_alt_outlined, "CHANGE PASSWORD"),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: screenHeight * 0.1,
                   ),
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: colorPrimary,
-                        borderRadius: BorderRadius.circular(10)),
-                    alignment: Alignment.center,
-                    child: Text(
-                      "SAVE",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15),
+                  InkWell(
+                    onTap: () {
+                      Provider.of<AccountProvider>(context, listen: false)
+                          .updateInfor(IdPatient, email.text, name.text,
+                              address.text, phone.text, context);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: colorPrimary,
+                          borderRadius: BorderRadius.circular(10)),
+                      alignment: Alignment.center,
+                      child: Provider.of<AccountProvider>(context).isUpdateInfor
+                          ? const Center(
+                              child: SizedBox(
+                                  height: 20,
+                                  width: 80,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.blue,
+                                  )),
+                            )
+                          : const Text(
+                              "SAVE",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
                     ),
                   ),
                 ],
@@ -134,15 +189,25 @@ class _EditAccountPageState extends State<EditAccountPage> {
     );
   }
 
-  Container AvatarEditAccount() {
+  Container AvatarEditAccount(String img) {
     return Container(
         width: 100,
         height: 100,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
-            image: DecorationImage(
-                image: NetworkImage(
-                    "https://images.unsplash.com/photo-1594824476967-48c8b964273f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1374&q=80"),
-                fit: BoxFit.cover)));
+            image:
+                DecorationImage(image: NetworkImage(img), fit: BoxFit.cover)));
+  }
+
+  Container AvatarNull() {
+    return Container(
+      width: 100,
+      height: 100,
+      child: Icon(
+        Icons.account_circle_rounded,
+        size: 100,
+        color: colorPrimary,
+      ),
+    );
   }
 }

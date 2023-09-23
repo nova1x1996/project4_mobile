@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_hk4_mobile/const/const.dart';
+import 'package:project_hk4_mobile/providers/AccountProvider.dart';
+import 'package:provider/provider.dart';
 
 Future<void> showLogoutDialog(BuildContext context) async {
   return showDialog<void>(
@@ -20,7 +22,7 @@ Future<void> showLogoutDialog(BuildContext context) async {
                 ),
                 const Text("Are you sure you want to log-out?"),
                 const Spacer(),
-                ButtonLogout(),
+                ButtonLogout(context),
                 const SizedBox(
                   height: 10,
                 ),
@@ -73,16 +75,21 @@ Container HeaderImageConfirmLogout() {
   );
 }
 
-Container ButtonLogout() {
-  return Container(
-    padding: EdgeInsets.symmetric(vertical: 10),
-    width: double.infinity,
-    alignment: Alignment.center,
-    decoration: BoxDecoration(
-        color: colorPrimary, borderRadius: BorderRadius.circular(8)),
-    child: const Text(
-      "LOG OUT",
-      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+InkWell ButtonLogout(BuildContext context) {
+  return InkWell(
+    onTap: () {
+      Provider.of<AccountProvider>(context, listen: false).logout(context);
+    },
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      width: double.infinity,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+          color: colorPrimary, borderRadius: BorderRadius.circular(8)),
+      child: const Text(
+        "LOG OUT",
+        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
     ),
   );
 }

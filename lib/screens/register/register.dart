@@ -1,23 +1,26 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:project_hk4_mobile/providers/AccountProvider.dart';
-import 'package:project_hk4_mobile/screens/register/register.dart';
+import 'package:project_hk4_mobile/screens/login/login_main.dart';
 import 'package:provider/provider.dart';
 
 import '../../const/const.dart';
+import '../../providers/AccountProvider.dart';
 import '../../widget/MauInput2.dart';
 
-class LoginMain extends StatefulWidget {
-  static const routeName = "/LoginMain";
-  const LoginMain({super.key});
+class RegisterPage extends StatefulWidget {
+  static const routeName = "/Register";
+  const RegisterPage({super.key});
 
   @override
-  State<LoginMain> createState() => _LoginMainState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginMainState extends State<LoginMain> {
+class _RegisterPageState extends State<RegisterPage> {
   TextEditingController txt_email = TextEditingController();
   TextEditingController txt_password = TextEditingController();
+  TextEditingController txt_name = TextEditingController();
+  TextEditingController txt_phone = TextEditingController();
+  TextEditingController txt_address = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +30,10 @@ class _LoginMainState extends State<LoginMain> {
     var screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: screenHeight,
-          width: double.infinity,
+      body: Container(
+        height: screenHeight,
+        width: double.infinity,
+        child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -49,7 +52,7 @@ class _LoginMainState extends State<LoginMain> {
                       height: screenHeight * 0.2,
                     ),
                     Text(
-                      "Sign In",
+                      "Register",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 32,
@@ -62,29 +65,52 @@ class _LoginMainState extends State<LoginMain> {
                   ],
                 ),
               ),
-              Expanded(
-                  child: Container(
+              Container(
                 padding: EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                 color: Colors.white,
                 child: Column(
                   children: [
                     MauInput2(
-                        label: "EMAIL",
-                        placeholder: "Email",
-                        controller: txt_email),
+                        label: "NAME",
+                        placeholder: "Please enter your name",
+                        controller: txt_name),
+                    MauInput2(
+                      label: "EMAIL",
+                      placeholder: "Please enter your email",
+                      controller: txt_email,
+                    ),
+                    MauInput2(
+                        label: "ADDRESS",
+                        placeholder: "Please enter your address",
+                        controller: txt_address),
+                    MauInput2(
+                      label: "PHONE",
+                      placeholder: "Please enter your phone",
+                      controller: txt_phone,
+                    ),
                     MauInput2(
                         label: "PASSWORD",
-                        placeholder: "Password",
+                        placeholder: "Please enter your password",
                         controller: txt_password,
                         password: true),
-                    Text("Forget Password ?",
-                        style: TextStyle(color: colorPrimary, fontSize: 15)),
-                    Spacer(),
+                    MauInput2(
+                        label: "CONFIRM PASSWORD",
+                        placeholder: "Please enter confirm password",
+                        controller: txt_password,
+                        password: true),
+                    SizedBox(
+                      height: 20,
+                    ),
                     InkWell(
                       onTap: () {
                         Provider.of<AccountProvider>(context, listen: false)
-                            .dangnhap(
-                                txt_email.text, txt_password.text, context);
+                            .register(
+                                txt_email.text,
+                                txt_name.text,
+                                txt_address.text,
+                                txt_phone.text,
+                                txt_password.text,
+                                context);
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 13),
@@ -103,7 +129,7 @@ class _LoginMainState extends State<LoginMain> {
                               )
                             : Center(
                                 child: Text(
-                                "SIGN IN",
+                                "SUBMIT",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold),
@@ -119,30 +145,26 @@ class _LoginMainState extends State<LoginMain> {
                             style: TextStyle(
                                 fontSize: 15, color: placeholderInput),
                             children: [
-                              TextSpan(text: "Don't have an account?"),
+                              TextSpan(text: "You already have an account? "),
                               TextSpan(
-                                  text: ' Sign Up',
-                                  style: TextStyle(
-                                      color: colorPrimary,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500),
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Navigator.pushNamed(
-                                          context, RegisterPage.routeName);
-                                    }
-                                  /* recognizer: TapGestureRecognizer()
+                                text: 'Log In',
+                                style: TextStyle(
+                                    color: colorPrimary,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500),
+                                recognizer: TapGestureRecognizer()
                                   ..onTap = () {
                                     // Đoạn này thực hiện điều hướng khi người dùng bấm vào "Đăng ký"
-                                    Navigator.pushNamed(context, '/Register');
-                                  },*/
-                                  )
+                                    Navigator.pushNamed(
+                                        context, LoginMain.routeName);
+                                  },
+                              )
                             ]),
                       ),
                     ),
                   ],
                 ),
-              )),
+              ),
             ],
           ),
         ),
