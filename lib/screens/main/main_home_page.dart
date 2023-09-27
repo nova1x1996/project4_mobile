@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:project_hk4_mobile/providers/FilterProvider.dart';
 import 'package:project_hk4_mobile/screens/alldoctor/alldoctor.dart';
 import 'package:project_hk4_mobile/screens/homepage/homepage.dart';
 import 'package:project_hk4_mobile/screens/myaccount/my_account.dart';
+import 'package:provider/provider.dart';
 
 import '../../const/const.dart';
 
@@ -13,6 +15,12 @@ class MainHomePage extends StatefulWidget {
 }
 
 class _MainHomePageState extends State<MainHomePage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   List ListPage = [HomePage(), AllDoctor(), MyAccountPage()];
   List ListTitlePage = ["Home Page", "All Doctors", "My Account"];
   int _selectedIndex = 0;
@@ -46,12 +54,23 @@ class _MainHomePageState extends State<MainHomePage> {
               height: 10,
             ),
             TextField(
+              style: TextStyle(color: Colors.white),
+              onSubmitted: (value) {
+                Provider.of<FilterProvider>(context, listen: false)
+                    .changeSearchContent(value);
+
+                _onItemTapped(1);
+              },
               decoration: InputDecoration(
                 fillColor: backgroundInput2,
                 filled: true,
                 contentPadding: EdgeInsets.symmetric(horizontal: 20),
                 labelStyle: TextStyle(color: Colors.white, fontSize: 14),
-                labelText: "Search Doctors, Clinics ...",
+                labelText: "Search Doctors ...",
+                suffixIcon: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(width: 0.3, color: Colors.black),
                 ),

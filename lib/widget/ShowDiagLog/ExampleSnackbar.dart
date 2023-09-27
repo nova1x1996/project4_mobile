@@ -67,5 +67,5 @@ void FlushBarTopError(BuildContext context, String content) {
     backgroundColor: Colors.red,
     messageSize: 16,
     icon: Icon(Icons.error_outline, color: Colors.white),
-  )..show(context);
+  ).show(context);
 }

@@ -218,30 +218,17 @@ class _ConfirmBookingState extends State<ConfirmBooking> {
                       transactions: const [
                         {
                           "amount": {
-                            "total": '70',
+                            "total": '50',
                             "currency": "USD",
                             "details": {
-                              "subtotal": '70',
+                              "subtotal": '50',
                               "shipping": '0',
                               "shipping_discount": 0
                             }
                           },
                           "description": "The payment transaction description.",
                           "item_list": {
-                            "items": [
-                              {
-                                "name": "Apple",
-                                "quantity": 4,
-                                "price": '5',
-                                "currency": "USD"
-                              },
-                              {
-                                "name": "Pineapple",
-                                "quantity": 5,
-                                "price": '10',
-                                "currency": "USD"
-                              }
-                            ],
+                            "items": [],
                             // shipping address is Optional
                             "shipping_address": {
                               "recipient_name": "Raman Singh",

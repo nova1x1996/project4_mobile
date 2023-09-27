@@ -25,24 +25,33 @@ class validateAllFields {
 
   String? validateFullname(String fullname) {
     if (fullname.isEmpty || fullname == '') {
-      return "Fullname cannot be empty!";
+      return "Name cannot be empty!";
     } else if (fullname.length > 100) {
-      return 'Fullname is too long!';
+      return 'Name is too long!';
+    } else {
+      return null;
+    }
+  }
+
+  String? validateAddress(String address) {
+    if (address.isEmpty || address == '') {
+      return "Address cannot be empty!";
+    } else if (address.length > 100) {
+      return 'Address is too long!';
     } else {
       return null;
     }
   }
 
   String? validatePassword(String password) {
-    var passwordRegex = RegExp(r'^(?=.*?[A-Z])(?=.*?[0-9])');
+    var passwordRegex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$%^&*])');
     if (password.isEmpty || password == '') {
       return "Password cannot be empty!";
-    } else if (password.length < 8) {
-      return  "Password must be at least 8 characters long!";
+    } else if (password.length < 8 || password.length > 12) {
+      return "Password must be between 8 and 12 characters long!";
     } else if (!passwordRegex.hasMatch(password)) {
-      return "Password must contain at least one uppercase letter and one lowercase letter!";
-    } else if (password.length > 200) {
-      return "Password is too long!";
+      return "Password must contain at least one special character, one digit, one uppercase letter, and one lowercase letter!";
     } else {
       return null;
     }
@@ -51,9 +60,9 @@ class validateAllFields {
   String? validatePhone(String phone) {
     var phoneRegex = RegExp(r'^0[0-9]{9,10}$');
     if (phone.isEmpty || phone == '') {
-      return  "Phone number cannot be empty!";
+      return "Phone number cannot be empty!";
     } else if (!phoneRegex.hasMatch(phone)) {
-      return  "Phone number must start with 0 and must contain 10 digits.";
+      return "Phone number must start with 0 and must contain 10 digits.";
     } else if (phone.length > 30) {
       return "Phone is to long.";
     } else {

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:project_hk4_mobile/model/Doctor.dart';
 import 'package:project_hk4_mobile/model/LichLamViec.dart';
+import 'package:project_hk4_mobile/providers/FilterProvider.dart';
 import 'package:project_hk4_mobile/screens/payment/payment_history.dart';
 import 'package:project_hk4_mobile/screens/payment/payment_success.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,9 +23,10 @@ class DoctorProvider extends ChangeNotifier {
   List<LichLamViec> get getlistLLV => listLLV;
   List<Doctor> get getList => listDoctor;
   int count = 0;
-  Future<List<Doctor>> getListDoctor() async {
+  Future<List<Doctor>> getListDoctor(String search) async {
     //String apiGetList = ipBackend + "api/doctor";
-    String apiGetListRating = ipBackend + "api/doctor/withrating";
+    String apiGetListRating =
+        ipBackend + "api/doctor/withrating/search=" + search;
 
     try {
       var respone = await http.get(

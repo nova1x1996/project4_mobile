@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:project_hk4_mobile/const/const.dart';
+import 'package:project_hk4_mobile/model/Appointment.dart';
+import 'package:project_hk4_mobile/providers/HistoryAppointment.dart';
+import 'package:provider/provider.dart';
 
 class PaymentHistory extends StatefulWidget {
   static const routeName = "/PaymentHistory";
@@ -31,15 +35,37 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
           child: Column(
             children: [
-              ListView.separated(
-                  shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => HistoryCard(),
-                  separatorBuilder: (context, index) => SizedBox(
-                        height: 10,
-                      ),
-                  itemCount: 5),
-              HistoryCard(),
+              FutureBuilder(
+                future: Provider.of<HistoryAppointment>(context, listen: false)
+                    .getListDoctor(),
+                builder: (context, snapshot) {
+                  List<Appointment> listAppointment = [];
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text("Failed, Error !.Try Late !"),
+                    );
+                  }
+                  if (snapshot.hasData) {
+                    listAppointment = snapshot.data as List<Appointment>;
+                  }
+                  return ListView.separated(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        var model = listAppointment[index];
+                        return HistoryCard(model);
+                      },
+                      separatorBuilder: (context, index) => SizedBox(
+                            height: 10,
+                          ),
+                      itemCount: listAppointment.length);
+                },
+              ),
             ],
           ),
         )),
@@ -47,7 +73,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     );
   }
 
-  Container HistoryCard() {
+  Container HistoryCard(Appointment model) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       width: double.infinity,
@@ -56,12 +82,13 @@ class _PaymentHistoryState extends State<PaymentHistory> {
         children: [
           Column(
             children: [
-              HistoryCardHeader(),
+              HistoryCardHeader(model.price),
               Divider(
                 height: 1,
                 color: bgColor1,
               ),
-              HistoryCardContent(),
+              HistoryCardContent(model.date.add(Duration(days: 1)),
+                  model.startTime, model.endTime),
               Divider(
                 height: 1,
                 color: bgColor1,
@@ -96,7 +123,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     );
   }
 
-  Container HistoryCardContent() {
+  Container HistoryCardContent(DateTime date, String start, String end) {
     return Container(
       height: 80,
       width: double.infinity,
@@ -113,7 +140,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                 style:
                     TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
               ),
-              Text("17 May, 2020",
+              Text(DateFormat('dd-MM-yyyy').format(date).toString(),
                   style: TextStyle(fontWeight: FontWeight.w500)),
             ],
           ),
@@ -129,7 +156,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
                   style: TextStyle(
                       color: Colors.grey, fontWeight: FontWeight.w500)),
               Text(
-                "17:00 PM",
+                start + " - " + end,
                 style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
@@ -139,7 +166,7 @@ class _PaymentHistoryState extends State<PaymentHistory> {
     );
   }
 
-  Padding HistoryCardHeader() {
+  Padding HistoryCardHeader(int price) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -159,10 +186,10 @@ class _PaymentHistoryState extends State<PaymentHistory> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("\$ 100",
+              Text("\$ $price",
                   style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
               Text(
-                "Visa",
+                "Paypal",
                 style: TextStyle(
                     color: Colors.grey,
                     fontWeight: FontWeight.w500,

@@ -10,6 +10,8 @@ Color backgroundInput2 = Color(0xfff7d8ad6);
 Color colorBoderInput = Color(0xfffe4e9f2);
 Color colorTextSubtitle = Color(0xfffb0b9ca);
 
+Color colorPrimaryAdmin = Color(0xfff103E63);
+Color colorBGAdmin = Color(0xfff202020);
 //Edit ACcount
 Color colorEA_bgButton = Color(0xfff6f7f9);
 Color colorEA_borderButton = Color(0xfff99a5ba);

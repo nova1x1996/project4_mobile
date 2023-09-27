@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../model/CheckLoginMobileDAO.dart';
 import '../const/ipbackend.dart';
+import '../model/Admin.dart';
 import '../model/Patient.dart';
 import '../widget/ShowDiagLog/ExampleSnackbar.dart';
 
@@ -19,7 +22,7 @@ class AccountProvider extends ChangeNotifier {
   bool isUpdateInfor = false;
   bool isChangePass = false;
   bool isRegister = false;
-
+  Admin? admin;
   Patient? patient;
 
   Future<void> test() async {
@@ -48,20 +51,39 @@ class AccountProvider extends ChangeNotifier {
       );
       if (respone.statusCode == 200) {
         var model = jsonDecode(respone.body) as Map<String, dynamic>;
-        patient = Patient.fromMap(model);
-        isLoading = false;
-        notifyListeners();
-        //Lưu vào bộ nhớ đệm
-        SharedPreferences bnd = await SharedPreferences.getInstance();
-        var jsonPatient = patient!.toJson();
-        bnd.setString("idPatient", jsonPatient);
+        if (model["role"] == "ADMIN") {
+          admin = Admin.fromMap(model);
+          isLoading = false;
+          notifyListeners();
+          //Lưu vào bộ nhớ đệm
+          SharedPreferences bnd = await SharedPreferences.getInstance();
+          var jsonAdmin = admin!.toJson();
+          bnd.setString("idAdmin", jsonAdmin);
 
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          MainPage.routeName,
-          (route) => false,
-        );
-        FlushBarTopSuccess(context, "Login successfull");
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            MainPage.routeName,
+            (route) => false,
+          );
+        } else {
+          patient = Patient.fromMap(model);
+          isLoading = false;
+          notifyListeners();
+          //Lưu vào bộ nhớ đệm
+          SharedPreferences bnd = await SharedPreferences.getInstance();
+          var jsonPatient = patient!.toJson();
+          bnd.setString("idPatient", jsonPatient);
+
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            MainPage.routeName,
+            (route) => false,
+          );
+
+          FlushBarTopSuccess(context, "Login Success");
+        }
+
+        // FlushBarTopSuccess(context, "Login successfull");
       } else if (respone.statusCode == 404) {
         isLoading = false;
         notifyListeners();
@@ -76,23 +98,42 @@ class AccountProvider extends ChangeNotifier {
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      FlushBarTopError(
-          context, "An unexpected error occurred or  check internet !!!");
+      // FlushBarTopError(
+      //     context, "An unexpected error occurred or  check internet !!!");
 
       //Xuất hiện Popup " Đổi IP khác Wifi khác cho người dùngs"
       print(e);
     }
   }
 
-  Future<bool> autoCheckLogin() async {
+  Future<int> autoCheckLogin() async {
     SharedPreferences bnd = await SharedPreferences.getInstance();
     var result = bnd.getString("idPatient");
+    SharedPreferences bndAdmin = await SharedPreferences.getInstance();
+    var resultAdmin = bndAdmin.getString("idAdmin");
 
     if (result != null) {
       patient = Patient.fromJson(result!);
+      admin = null;
+      return 1;
+    } else if (resultAdmin != null) {
+      admin = Admin.fromJson(resultAdmin!);
+      patient = null;
+      return 2;
+    } else {
+      return 3;
+    }
+  }
+
+  Future<bool> autoCheckLoginAdmin() async {
+    SharedPreferences bnd = await SharedPreferences.getInstance();
+    var result = bnd.getString("idAdmin");
+
+    if (result != null) {
+      admin = Admin.fromJson(result!);
       return true;
     } else {
-      patient = null;
+      admin = null;
       return false;
     }
   }
@@ -169,7 +210,9 @@ class AccountProvider extends ChangeNotifier {
   }
 
   Future<void> register(String email, String name, String address, String phone,
-      String password, BuildContext context) async {
+      String password, bool gender, String dob, BuildContext context) async {
+//Convert sang Date
+
     isRegister = true;
     notifyListeners();
     String registerPatient = ipBackend + "api/patient/";
@@ -184,6 +227,8 @@ class AccountProvider extends ChangeNotifier {
           "address": address,
           "phone": phone,
           "password": password,
+          "gender": gender,
+          "dob": dob,
         }),
       );
 
@@ -207,13 +252,55 @@ class AccountProvider extends ChangeNotifier {
 
   Future<void> logout(BuildContext context) async {
     patient = null;
-
+    admin = null;
+    ;
     SharedPreferences bnd = await SharedPreferences.getInstance();
     bnd.remove("idPatient");
+    bnd.remove("idAdmin");
     Navigator.pushNamedAndRemoveUntil(
       context,
       MainPage.routeName,
       (route) => false,
     );
+  }
+
+  Future<void> updateImage(
+      File _imageFile, int Id, BuildContext context) async {
+    String updateImageAPI =
+        ipBackend + "api/patient/updateImage/" + Id.toString();
+
+    //Check giới hạn file
+    int fileSizeInBytes = await _imageFile.length();
+    int maxFileSizeBytes = 1048576;
+    if (fileSizeInBytes > maxFileSizeBytes) {
+      FlushBarTopError(context, "The image must be smaller than 1MB.");
+      return;
+    }
+    try {
+      var request = http.MultipartRequest('PUT', Uri.parse(updateImageAPI));
+      request.headers['Content-Type'] = 'image/png';
+      request.files.add(await http.MultipartFile.fromPath(
+          'file', _imageFile!.path,
+          contentType: MediaType('image', 'jpg')));
+
+      var response = await request.send();
+      var responseBody = await response.stream.bytesToString();
+      if (response.statusCode == 200) {
+        SharedPreferences bnd = await SharedPreferences.getInstance();
+        Patient aaa = Patient.fromJson(responseBody.toString());
+        patient = aaa;
+        var jsonPatient = patient!.toJson();
+        bnd.setString("idPatient", jsonPatient);
+        notifyListeners();
+        Navigator.pushReplacementNamed(context, EditAccountPage.routeName);
+        FlushBarTopSuccess(context, "Update avatar success !");
+      } else {
+        // Xử lý lỗi
+        FlushBarTopError(context, "Update avatar failed ! Try late");
+      }
+    } catch (ex) {
+      print(ex);
+      FlushBarTopError(context, "Update avatar failed !  Try late");
+    }
   }
 }

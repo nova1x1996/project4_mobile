@@ -1,2 +1,2 @@
-const ip = '192.168.0.103';
+const ip = '192.168.1.119';
 const ipBackend = "http://" + ip + ":8888/";

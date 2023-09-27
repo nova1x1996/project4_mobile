@@ -6,7 +6,7 @@ import 'package:project_hk4_mobile/model/TypeDoctor.dart';
 class Doctor {
   int id;
   String name;
-  String username;
+
   String password;
   String email;
   String address;
@@ -20,7 +20,6 @@ class Doctor {
   Doctor({
     required this.id,
     required this.name,
-    required this.username,
     required this.password,
     required this.email,
     required this.address,
@@ -36,7 +35,6 @@ class Doctor {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'username': username,
       'password': password,
       'email': email,
       'address': address,
@@ -52,7 +50,6 @@ class Doctor {
     return Doctor(
       id: map['id'] as int,
       name: map['name'] as String,
-      username: map['username'] as String,
       password: map['password'] as String,
       email: map['email'] as String,
       address: map['address'] as String,

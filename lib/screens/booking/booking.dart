@@ -207,26 +207,18 @@ class _BookingPageState extends State<BookingPage> {
         child: Column(
       children: [
         doctor.image == null
-            ? Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: AssetImage("./assets/images/doctor/default.jpg"),
-                  ),
-                ),
-              )
-            : Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(doctor.image!),
-                  ),
+            ? AnhMacDinhBooking()
+            : ClipRRect(
+                borderRadius: BorderRadius.circular(50),
+                child: Image.network(
+                  doctor.image!,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                  errorBuilder: (BuildContext context, Object exception,
+                      StackTrace? stackTrace) {
+                    return AnhMacDinhBooking();
+                  },
                 ),
               ),
         SizedBox(
@@ -282,6 +274,27 @@ class _BookingPageState extends State<BookingPage> {
         ),
       ],
     ));
+  }
+}
+
+class AnhMacDinhBooking extends StatelessWidget {
+  const AnhMacDinhBooking({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 100,
+      height: 100,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(50),
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: AssetImage("./assets/images/doctor/default.jpg"),
+        ),
+      ),
+    );
   }
 }
 

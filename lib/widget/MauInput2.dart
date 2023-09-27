@@ -39,6 +39,8 @@ Widget MauInput2(
               return validateAllFields().validatePhone(value!);
             } else if (kieuValidate == "passwordLogin") {
               return validateAllFields().validatePasswordLogin(value!);
+            } else if (kieuValidate == "address") {
+              return validateAllFields().validateAddress(value!);
             }
             return null;
           },

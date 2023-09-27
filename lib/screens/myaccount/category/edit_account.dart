@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:project_hk4_mobile/const/const.dart';
 import 'package:project_hk4_mobile/providers/AccountProvider.dart';
 import 'package:project_hk4_mobile/screens/myaccount/category/edit_account_pass.dart';
@@ -25,6 +28,8 @@ class _EditAccountPageState extends State<EditAccountPage> {
   TextEditingController name = TextEditingController();
 
   TextEditingController phone = TextEditingController();
+  late ImagePicker picker;
+  File? _imageFile;
   @override
   void initState() {
     // TODO: implement initState
@@ -36,6 +41,17 @@ class _EditAccountPageState extends State<EditAccountPage> {
     name.text = patientModel.name;
     phone.text = patientModel.phone;
     IdPatient = patientModel.id;
+    picker = ImagePicker();
+  }
+
+  Future<void> _pickImage(BuildContext context) async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _imageFile = File(pickedFile.path);
+      Provider.of<AccountProvider>(context, listen: false)
+          .updateImage(_imageFile!, IdPatient, context);
+    }
   }
 
   @override
@@ -71,11 +87,16 @@ class _EditAccountPageState extends State<EditAccountPage> {
                   SizedBox(
                     height: 15,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ButtonEA(Icons.change_circle_outlined, "CHANGE PHOTO"),
-                    ],
+                  InkWell(
+                    onTap: () {
+                      _pickImage(context);
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ButtonEA(Icons.change_circle_outlined, "CHANGE PHOTO"),
+                      ],
+                    ),
                   ),
                   SizedBox(
                     height: 20,

@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:project_hk4_mobile/providers/AccountProvider.dart';
+import 'package:project_hk4_mobile/providers/AppointmentAdminProvider.dart';
 import 'package:project_hk4_mobile/providers/DoctorProvider.dart';
+import 'package:project_hk4_mobile/providers/FilterProvider.dart';
+import 'package:project_hk4_mobile/providers/HistoryAppointment.dart';
+import 'package:project_hk4_mobile/providers/RatingAdminProvider.dart';
+import 'package:project_hk4_mobile/screens/Admin/mainAdmin/appointmentAdmin/appointment_admin.dart';
+import 'package:project_hk4_mobile/screens/Admin/mainAdmin/main_home_page_admin.dart';
+import 'package:project_hk4_mobile/screens/Admin/mainAdmin/ratingAdmin/rating_admin.dart';
 import 'package:project_hk4_mobile/screens/alldoctor/alldoctor.dart';
 import 'package:project_hk4_mobile/screens/booking/booking.dart';
 import 'package:project_hk4_mobile/screens/booking/confirmbooking.dart';
@@ -27,9 +34,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          ChangeNotifierProvider(
+              create: (context) => AppointmentAdminProvider()),
+          ChangeNotifierProvider(create: (context) => RatingAdminProvider()),
           ChangeNotifierProvider(create: (context) => AccountProvider()),
           ChangeNotifierProvider(
             create: (context) => DoctorProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => FilterProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => HistoryAppointment(),
           ),
         ],
         child: MaterialApp(
@@ -41,13 +57,16 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
-          initialRoute: PaymentSuccessPage.routeName,
+          initialRoute: MainPage.routeName,
           routes: {
             MyAccountPage.routeName: (context) => const MyAccountPage(),
             MainPage.routeName: (context) => const MainPage(),
             LoginMain.routeName: (context) => const LoginMain(),
             BookingPage.routeName: (context) => const BookingPage(),
             ConfirmBooking.routeName: (context) => const ConfirmBooking(),
+            AppointmentAdmin.routeName: (context) => const AppointmentAdmin(),
+            AdminHomePage.routeName: (context) => const AdminHomePage(),
+            RatingAdmin.routeName: (context) => const RatingAdmin(),
             PaymentSuccessPage.routeName: (context) =>
                 const PaymentSuccessPage()
             // EditAccountPage.routeName: (context) => const EditAccountPage(),

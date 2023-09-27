@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../const/const.dart';
 import '../../../providers/AccountProvider.dart';
+import '../../../validate/validateAllFields.dart';
 import '../../../widget/MauInput2.dart';
 import '../../../widget/ShowDiagLog/ExampleSnackbar.dart';
 
@@ -15,6 +16,8 @@ class EditAccountPass extends StatefulWidget {
 }
 
 class _EditAccountPassState extends State<EditAccountPass> {
+  var validateAF = validateAllFields();
+  final formKey = GlobalKey<FormState>();
   TextEditingController password = TextEditingController();
 
   TextEditingController confirmPassword = TextEditingController();
@@ -51,58 +54,66 @@ class _EditAccountPassState extends State<EditAccountPass> {
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               width: double.infinity,
               decoration: BoxDecoration(color: Colors.white),
-              child: Column(
-                children: [
-                  MauInput2(
-                      label: "PASSWORD",
-                      placeholder: "Enter password",
-                      controller: password,
-                      password: true),
-                  MauInput2(
-                      label: "CONFIRM PASSWORD",
-                      placeholder: "Enter confirm password",
-                      controller: confirmPassword,
-                      password: true),
-                  SizedBox(
-                    height: screenHeight * 0.1,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      if (password.text != confirmPassword.text) {
-                        FlushBarTopError(context,
-                            "Password and password confirmation do not match");
-                        return;
-                      }
-
-                      Provider.of<AccountProvider>(context, listen: false)
-                          .updatePass(IdPatient, password.text, context);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                          color: colorPrimary,
-                          borderRadius: BorderRadius.circular(10)),
-                      alignment: Alignment.center,
-                      child: Provider.of<AccountProvider>(context).isUpdateInfor
-                          ? const Center(
-                              child: SizedBox(
-                                  height: 20,
-                                  width: 80,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.blue,
-                                  )),
-                            )
-                          : const Text(
-                              "CHANGE PASSWORD",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
+              child: Form(
+                key: formKey,
+                child: Column(
+                  children: [
+                    MauInput2(
+                        label: "PASSWORD",
+                        placeholder: "Enter password",
+                        kieuValidate: "password",
+                        controller: password,
+                        password: true),
+                    MauInput2(
+                        label: "CONFIRM PASSWORD",
+                        kieuValidate: "password",
+                        placeholder: "Enter confirm password",
+                        controller: confirmPassword,
+                        password: true),
+                    SizedBox(
+                      height: screenHeight * 0.1,
                     ),
-                  ),
-                ],
+                    InkWell(
+                      onTap: () {
+                        if (formKey.currentState!.validate()) {
+                          if (password.text != confirmPassword.text) {
+                            FlushBarTopError(context,
+                                "Password and password confirmation do not match");
+                            return;
+                          }
+
+                          Provider.of<AccountProvider>(context, listen: false)
+                              .updatePass(IdPatient, password.text, context);
+                        }
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: colorPrimary,
+                            borderRadius: BorderRadius.circular(10)),
+                        alignment: Alignment.center,
+                        child:
+                            Provider.of<AccountProvider>(context).isUpdateInfor
+                                ? const Center(
+                                    child: SizedBox(
+                                        height: 20,
+                                        width: 80,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.blue,
+                                        )),
+                                  )
+                                : const Text(
+                                    "CHANGE PASSWORD",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
